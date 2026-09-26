@@ -140,3 +140,40 @@ la foto que "vio" el agente al lado de la respuesta.
   cada uno dice exactamente qué pasó.
 - **Versiones fijadas.** Todo el grupo compila lo mismo; si una librería cambia, el código no se rompe solo.
 - **Los datos privados no van en el código.** WiFi y API key viven en la placa, no en el repositorio.
+
+---
+
+## Anexo: el canal de PWM (LEDC), en detalle
+
+Para explicar a fondo la palabra que más confunde en la clase 2.
+
+**Qué es.** Un generador de PWM en hardware dentro del periférico LEDC del ESP32. Genera la onda
+solo, sin ocupar al procesador.
+
+**Tres piezas:** el **temporizador** cuenta de 0 al máximo (4095 con 12 bits) y vuelve a empezar,
+N veces por segundo (la frecuencia); el **canal** compara esa cuenta con su **duty** y pone la
+salida en alto mientras la cuenta sea menor; el **pin** saca esa señal al LED.
+Comparación: metrónomo (temporizador), músico que decide cuánto dura la nota (canal), parlante (pin).
+
+```
+cuenta: 0 ──── 1024 ────────────── 4095 │ 0 ──── 1024 ─────── ...
+salida: ██████████▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁│██████████▁▁▁▁▁▁▁▁▁ ...   duty 1024/4096 = 25 %
+```
+
+**En código:** `ledcSetup(canal, frecuencia, bits)` configura el canal; `ledcAttachPin(pin, canal)`
+le conecta un pin; `ledcWrite(canal, duty)` fija el brillo. La onda sigue sola.
+
+**16 canales, 8 temporizadores: van de a pares.** Canales 0-1 comparten el temporizador 0, 2-3 el
+1, 4-5 el 2, 6-7 el 3 (y 8-15 los otros cuatro). Dentro del par, **frecuencia y resolución son
+compartidas**; el **duty es propio** de cada canal. La cámara usa el canal 0 para su reloj de
+20 MHz: por eso el flash usa el 4 y **tampoco puede usar el 1** (cambiaría el reloj de la cámara).
+
+**El límite:** frecuencia × 2^bits ≤ 80 MHz. A 5000 Hz entran hasta 13 bits; el reloj de la
+cámara a 20 MHz usa 1 bit (onda cuadrada). Más frecuencia = menos escalones de brillo.
+
+**Canal ≠ pin:** un canal puede alimentar varios pines (mismo brillo); un pin recibe un solo
+canal a la vez; casi cualquier pin puede recibir cualquier canal (matriz de conexiones).
+
+**No confundir** con el canal WiFi (franja de frecuencias del aire). En el Arduino core 3.x,
+`ledcAttach(pin, frecuencia, bits)` elige el canal solo; el curso fija la versión 2.x para que el
+canal quede a la vista.
