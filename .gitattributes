@@ -3,3 +3,7 @@
 *.ps1 text eol=crlf
 # Firmware precompilado: binario, sin conversiones.
 *.bin binary
+# Scripts de Mac/Linux: fin de linea LF (con CRLF, bash y perl fallan).
+*.command text eol=lf
+*.pl text eol=lf
+*.sh text eol=lf

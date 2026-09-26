@@ -18,7 +18,8 @@ flowchart LR
 |---|---|---|
 | `lecciones/NN_*` | Proyecto PlatformIO por lección; `// --- Parte n` = sección del README | 01-04 con panel · 05 sin panel (fase 3) |
 | `lib/panel` | Lado placa del protocolo: traza de partes, pausa/paso, parámetros en NVS, fotos por USB, WiFi guardado en NVS | en uso (01-04) |
-| `panel/servidor.ps1` | Sirve el repo solo en localhost; bloquea `.git`, `.pio`, `secrets.h`, traversal | en uso |
+| `panel/servidor.ps1` | Sirve el repo solo en localhost; bloquea `.git`, `.pio`, `secrets.h`, traversal (Windows, PowerShell) | en uso |
+| `panel/servidor.pl` | Mismo servidor para Mac/Linux, en Perl (viene con macOS); lo lanza `iniciar.command` | en uso |
 | `panel/js/placa.js` | Web Serial: carga con esptool-js y monitor | en uso |
 | `panel/js/protocolo.js` | Lado panel del protocolo (eventos y comandos) | en uso |
 | `panel/js/visor_codigo.js` | Resaltado C++ y bloques por parte | en uso |

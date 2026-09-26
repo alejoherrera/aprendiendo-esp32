@@ -4,8 +4,8 @@ Curso práctico y gratuito para aprender a programar una **ESP32-CAM**: una plac
 dólares con WiFi y cámara. Empieza por hacer parpadear una luz y termina con la cámara
 funcionando como **los ojos de una inteligencia artificial** (Gemini) que describe lo que ve.
 
-- **Sin instalar nada:** en Windows, un doble clic abre un panel en el navegador desde el que se
-  cargan las lecciones en la placa.
+- **Sin instalar nada:** en Windows o Mac, un doble clic abre un panel en el navegador desde el
+  que se cargan las lecciones en la placa.
 - **El código explicado parte por parte**, para quien nunca programó.
 - **Mirás el código mientras corre:** podés pausar la placa y ver qué parte se está ejecutando.
 
@@ -24,10 +24,12 @@ agente de IA. También se abre desde el panel (enlace "Bienvenida", arriba).
 | Cable micro-USB **de datos** | Corto y de buena calidad (los cables "solo carga" no sirven) |
 | Red WiFi de **2.4 GHz** | Para las lecciones 04 y 05. Las redes "5G" no son compatibles |
 
-**En la computadora:** Windows 10 u 11 con **Microsoft Edge** (ya viene instalado) o Google
-Chrome. **No hace falta instalar nada más.**
+**En la computadora**, sin instalar nada más:
+- **Windows 10 u 11** con **Microsoft Edge** (ya viene instalado) o Google Chrome.
+- **Mac** con **Google Chrome** o **Microsoft Edge**. Safari **no sirve**: no puede conectarse
+  a la placa por USB. Si tu Mac no tiene ninguno de los dos, instalá Chrome.
 
-## Empezar en 5 pasos
+## Empezar en 5 pasos (Windows)
 
 1. **Descargá el curso:** botón verde **Code → Download ZIP** en esta página.
 2. **Descomprimí el ZIP** (clic derecho → *Extraer todo*). No lo abras desde adentro del ZIP.
@@ -39,6 +41,21 @@ Chrome. **No hace falta instalar nada más.**
    **USB-SERIAL CH340**.
 5. Elegí la **lección 01** → **Cargar lección**. Cuando termine, el flash de la cámara empieza a
    parpadear. ¡Listo!
+
+### En Mac
+
+1. Descargá el ZIP (**Code → Download ZIP**) y hacé doble clic para descomprimirlo.
+2. En la carpeta, hacé **doble clic en `iniciar.command`**. Se abre una ventana de Terminal
+   (dejala abierta) y el panel en Chrome o Edge.
+   > Si macOS dice que **no puede verificar el desarrollador**: andá a **Configuración del
+   > Sistema → Privacidad y seguridad**, bajá hasta el aviso de `iniciar.command` y tocá
+   > **Abrir igualmente**. Solo la primera vez.
+   >
+   > Otra forma, sin ese aviso: abrí la app **Terminal**, escribí `bash ` (con un espacio),
+   > arrastrá el archivo `iniciar.command` a la ventana y apretá Enter.
+3. Enchufá la placa, tocá **Conectar placa** y elegí el puerto que dice **USB Serial** o
+   **wchusbserial**. Las versiones recientes de macOS ya traen el driver del adaptador.
+4. Lección 01 → **Cargar lección**.
 
 Cada lección tiene su explicación en el panel. Tocá cualquier parte del código para leer qué hace.
 
@@ -76,8 +93,9 @@ por el cable USB a tu placa.
 | La placa se reinicia sola o la cámara falla | Casi siempre es la **alimentación**: usá un cable USB corto y bueno, conectado directo a la computadora. Ver [hardware](docs/00_hardware_esp32cam.md). |
 | "La cámara no inició" (error `0x105`) | El cable plano de la cámara está flojo: desenchufá el USB, abrí la traba negra, insertalo derecho hasta el fondo y cerrala. |
 | No se conecta al WiFi | La red tiene que ser de **2.4 GHz**. Revisá la clave y acercá la placa al router. |
-| Se cerró la ventana negra | Volvé a hacer doble clic en `iniciar.bat` y recargá el panel. |
-| Uso Mac o Linux | El panel (`iniciar.bat`) es para Windows. En Mac/Linux se puede seguir el curso con VS Code + PlatformIO (ver abajo). |
+| Se cerró la ventana negra (o la de Terminal en Mac) | Volvé a hacer doble clic en `iniciar.bat` (o `iniciar.command`) y recargá el panel. |
+| En Mac, el panel dice que el navegador no puede conectarse | Estás en Safari. Abrí la dirección del panel en Chrome o Edge. |
+| Uso Linux | Abrí una terminal en la carpeta del curso y escribí `perl panel/servidor.pl`; después abrí el panel en Chrome. |
 
 ## ¿Querés modificar el código?
 
@@ -107,7 +125,7 @@ Después: VS Code → **File → Open Folder…** → elegí la carpeta de una l
 
 - **[Guía docente](docs/guia_docente.md): qué remarcar en cada clase**, con comparaciones para explicar cada concepto y confusiones típicas.
 - `lecciones/`: una carpeta por lección (código + explicación).
-- `panel/`: el panel web que abre `iniciar.bat`, incluida la bienvenida (`panel/bienvenida.html`).
+- `panel/`: el panel web que abren `iniciar.bat` (Windows) e `iniciar.command` (Mac), incluida la bienvenida (`panel/bienvenida.html`).
 - `firmware/`: las lecciones ya compiladas, las que carga el panel.
 - `docs/`: la placa, decisiones de diseño y aprendizajes técnicos
   ([por ejemplo](docs/knowledge/esp32_https_gemini.md), cómo se depuró la conexión con Gemini).
