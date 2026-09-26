@@ -1,0 +1,7 @@
+[
+  {"id": "01_blink", "titulo": "Blink", "resumen": "Parpadear el flash y usar el monitor serie", "disponible": true, "entrada": "", "foto": "", "web": false, "agente": false},
+  {"id": "02_flash_pwm", "titulo": "Flash con PWM", "resumen": "Controlar el brillo del flash", "disponible": true, "entrada": "Un porcentaje 0-100 fija el brillo (ej: 5, 20, 50) · r vuelve a respirar", "foto": "", "web": false, "agente": false},
+  {"id": "03_primera_foto", "titulo": "Primera foto", "resumen": "Iniciar la cámara y capturar", "disponible": true, "entrada": "f inspecciona una foto · v la saca y la muestra en el panel", "foto": "v", "web": false, "agente": false},
+  {"id": "04_servidor_web", "titulo": "Servidor web", "resumen": "Ver la foto en el navegador", "disponible": true, "entrada": "", "foto": "", "web": true, "agente": false},
+  {"id": "05_ojos_de_un_agente", "titulo": "Ojos de un agente", "resumen": "La cámara como ojos de una IA (Gemini)", "disponible": true, "entrada": "? tu pregunta → la placa mira y Gemini responde", "foto": "", "web": true, "agente": true}
+]

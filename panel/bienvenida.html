@@ -1,0 +1,644 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>¿Quién está mirando?</title>
+<style>
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; }
+img { max-width: 100%; }
+[hidden] { display: none !important; }
+</style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root {
+  --fondo: #eef1f0;
+  --superficie: #ffffff;
+  --superficie-2: #e3e8e6;
+  --tinta: #13201e;
+  --suave: #56645f;
+  --linea: #c9d2cf;
+  --ambar: #b8730a;
+  --ambar-vivo: #e39a1c;
+  --ambar-suave: #f6e3c0;
+  --pcb: #1d3a33;
+  --pcb-linea: #3f6b5f;
+  --oro: #d7a63e;
+  --rojo: #d2463c;
+  --verde: #3e9b5a;
+  --azul: #2f62c8;
+  --escena-texto: #13201e;
+  --sombra: 0 1px 2px rgba(19,32,30,.06), 0 8px 24px rgba(19,32,30,.08);
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --texto: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", Consolas, "Courier New", monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --fondo: #0e1614; --superficie: #16211f; --superficie-2: #1f2c29; --tinta: #e6ecea;
+    --suave: #9aaba6; --linea: #2d3c38; --ambar: #f0a92a; --ambar-vivo: #f7bb4d; --ambar-suave: #3a2c12;
+    --pcb: #17302a; --pcb-linea: #3f6b5f; --sombra: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --fondo: #0e1614; --superficie: #16211f; --superficie-2: #1f2c29; --tinta: #e6ecea;
+  --suave: #9aaba6; --linea: #2d3c38; --ambar: #f0a92a; --ambar-vivo: #f7bb4d; --ambar-suave: #3a2c12;
+  --pcb: #17302a; --pcb-linea: #3f6b5f; --sombra: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--fondo); color: var(--tinta); font-family: var(--texto);
+  font-size: 17px; line-height: 1.65; padding-inline: 20px; padding-block: 0 64px;
+}
+.columna { max-width: 700px; margin: 0 auto; }
+.ancho { max-width: 1040px; margin: 0 auto; }
+h1, h2, h3 { font-family: var(--display); line-height: 1.1; text-wrap: balance; margin: 0; }
+h2 { font-size: clamp(28px, 4.2vw, 40px); font-weight: 700; letter-spacing: -.01em; }
+h3 { font-size: 20px; font-weight: 700; }
+p { margin: 0; }
+a { color: var(--ambar); text-underline-offset: 3px; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--ambar-vivo); outline-offset: 2px; border-radius: 6px; }
+.etiqueta { font-family: var(--mono); font-size: 12.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--ambar); }
+.dato { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.pie { font-size: 14px; color: var(--suave); }
+
+/* --- Portada --------------------------------------------------------------- */
+.portada { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 40px; align-items: center; padding-block: 56px 40px; }
+.portada h1 { font-size: clamp(48px, 8.5vw, 104px); font-weight: 800; letter-spacing: -.03em; }
+.portada h1 em { font-style: normal; color: var(--ambar); }
+.portada .bajada { font-size: 19px; color: var(--suave); max-width: 34ch; margin-top: 18px; }
+.ojo-caja { display: grid; justify-items: center; gap: 10px; }
+#ojo { width: min(100%, 380px); height: auto; overflow: visible; }
+@media (max-width: 760px) {
+  .portada { grid-template-columns: 1fr; padding-top: 32px; gap: 16px; }
+  .ojo-caja { order: -1; }
+  #ojo { width: min(78%, 300px); }
+}
+
+/* --- Capitulos -------------------------------------------------------------- */
+.capitulo { padding-block: 56px 8px; display: grid; gap: 18px; }
+.capitulo .cabeza { display: grid; gap: 8px; }
+.cifras { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-block: 6px; }
+.cifra { background: var(--superficie); border: 1px solid var(--linea); border-radius: 12px; padding: 14px 16px; }
+.cifra .n { font-family: var(--display); font-size: 30px; font-weight: 700; color: var(--ambar); line-height: 1; font-variant-numeric: tabular-nums; }
+.cifra .d { font-size: 14px; color: var(--suave); margin-top: 6px; line-height: 1.4; }
+
+/* Linea de tiempo */
+.tiempo { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 0; border-left: 2px solid var(--linea); }
+.tiempo li { position: relative; padding: 0 0 18px 22px; }
+.tiempo li::before { content: ""; position: absolute; left: -7px; top: 7px; width: 12px; height: 12px; border-radius: 50%; background: var(--fondo); border: 2px solid var(--ambar); }
+.tiempo .anio { font-family: var(--mono); font-weight: 500; color: var(--ambar); margin-right: 8px; }
+
+/* Comparacion */
+.tabla-caja { overflow-x: auto; }
+.comparacion { width: 100%; border-collapse: collapse; font-size: 15.5px; background: var(--superficie); border-radius: 12px; overflow: hidden; }
+.comparacion th, .comparacion td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--linea); vertical-align: top; }
+.comparacion thead th { font-family: var(--mono); font-size: 12.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--suave); font-weight: 500; }
+.comparacion tbody th { font-weight: 600; white-space: nowrap; }
+.comparacion td:last-child { font-weight: 500; }
+.comparacion tr:last-child th, .comparacion tr:last-child td { border-bottom: 0; }
+
+/* Placa */
+.placa-caja { display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: 24px; align-items: start; background: var(--superficie); border: 1px solid var(--linea); border-radius: 16px; padding: 20px; box-shadow: var(--sombra); }
+@media (max-width: 700px) { .placa-caja { grid-template-columns: 1fr; } }
+.placa-caja { margin: 0; }
+.foto-placa { position: relative; border-radius: 12px; overflow: hidden; background: #2a2f31; }
+.foto-placa img { display: block; width: 100%; height: auto; }
+.punto { position: absolute; width: 28px; height: 28px; transform: translate(-50%, -50%); border-radius: 50%;
+         border: 3px solid #fff; background: var(--ambar-vivo); cursor: pointer; padding: 0;
+         box-shadow: 0 0 0 4px rgba(227,154,28,.35), 0 2px 6px rgba(0,0,0,.5); animation: latido 2.4s ease-in-out infinite; }
+.punto[aria-pressed="true"] { background: #fff; box-shadow: 0 0 0 7px var(--ambar-vivo), 0 2px 6px rgba(0,0,0,.5); animation: none; }
+@keyframes latido { 50% { box-shadow: 0 0 0 10px rgba(227,154,28,0), 0 2px 6px rgba(0,0,0,.5); } }
+.credito { grid-column: 1 / -1; font-size: 13px; color: var(--suave); }
+.chip.atras { border-style: dashed; }
+.componentes { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.chip { border: 1px solid var(--linea); background: var(--superficie-2); border-radius: 999px; padding: 5px 12px; font-size: 14px; cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--ambar); border-color: var(--ambar); color: #fff; }
+.ficha h3 { margin-bottom: 4px; }
+.ficha .tec { font-family: var(--mono); font-size: 13.5px; color: var(--ambar); margin-bottom: 8px; }
+
+/* Escenario */
+.escenario { background: var(--superficie); border: 1px solid var(--linea); border-radius: 16px; padding: 16px; box-shadow: var(--sombra); display: grid; gap: 12px; }
+.pestanas { display: flex; flex-wrap: wrap; gap: 6px; }
+.pestana { border: 1px solid var(--linea); background: transparent; border-radius: 10px; padding: 8px 14px; cursor: pointer; font-weight: 500; }
+.pestana[aria-selected="true"] { background: var(--tinta); color: var(--fondo); border-color: var(--tinta); }
+.lienzo-caja { position: relative; border-radius: 10px; overflow: hidden; background: #000; }
+.lienzo-caja canvas { display: block; width: 100%; height: auto; touch-action: none; cursor: crosshair; }
+.controles { display: flex; flex-wrap: wrap; gap: 14px 22px; align-items: center; min-height: 34px; }
+.controles label { display: flex; gap: 10px; align-items: center; font-size: 15px; }
+.lectura { font-family: var(--mono); font-size: 13.5px; background: var(--superficie-2); border-radius: 8px; padding: 8px 12px; overflow-x: auto; white-space: nowrap; }
+.muestra { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -1px; margin-right: 4px; border: 1px solid var(--linea); }
+.explica { font-size: 15.5px; color: var(--suave); }
+.explica strong { color: var(--tinta); }
+
+/* Agente */
+.agente { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); gap: 18px; align-items: start; }
+@media (max-width: 820px) { .agente { grid-template-columns: 1fr; } }
+.preguntas { display: grid; gap: 8px; }
+.pregunta { text-align: left; border: 1px solid var(--linea); background: var(--superficie); border-radius: 12px; padding: 10px 14px; cursor: pointer; font-size: 15.5px; }
+.pregunta[aria-pressed="true"] { border-color: var(--ambar); background: var(--ambar-suave); }
+.respuesta { background: var(--superficie); border: 1px solid var(--linea); border-radius: 12px; padding: 14px 16px; display: grid; gap: 10px; }
+.respuesta .quien { font-family: var(--mono); font-size: 12.5px; color: var(--suave); letter-spacing: .04em; }
+.respuesta .texto { font-size: 16.5px; min-height: 3.2em; }
+.respuesta .accion { font-size: 15px; border-top: 1px dashed var(--linea); padding-top: 10px; }
+.respuesta .accion b { color: var(--ambar); }
+
+/* Tuberia medida */
+.tuberia { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+@media (max-width: 620px) { .tuberia { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.paso { background: var(--superficie); border: 1px solid var(--linea); border-radius: 12px; padding: 12px; }
+.paso .v { font-family: var(--mono); color: var(--ambar); font-size: 14px; }
+.paso .t { font-weight: 600; margin-top: 2px; }
+.paso .d { font-size: 14px; color: var(--suave); line-height: 1.4; margin-top: 4px; }
+
+/* Cierre */
+.cierre { margin-top: 64px; padding-block: 48px; border-top: 2px solid var(--tinta); display: grid; gap: 22px; }
+.cierre .grande { font-family: var(--display); font-size: clamp(30px, 5vw, 52px); font-weight: 800; line-height: 1.08; letter-spacing: -.02em; text-wrap: balance; }
+.cierre .grande em { font-style: normal; color: var(--ambar); }
+.para-clase { counter-reset: q; list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.para-clase li { counter-increment: q; display: grid; grid-template-columns: 38px 1fr; gap: 10px; align-items: baseline; }
+.para-clase li::before { content: counter(q); font-family: var(--display); font-weight: 800; font-size: 26px; color: var(--ambar); }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+<nav class="volver ancho"><a href="index.html">← Ir al panel de lecciones</a></nav>
+<style>.volver { padding-block: 14px 0; font-size: 15px; }</style>
+
+
+<div class="ancho">
+  <header class="portada">
+    <div>
+      <p class="etiqueta">Aprendiendo ESP32 · para empezar</p>
+      <h1>¿Quién está <em>mirando</em>?</h1>
+      <p class="bajada">Una cámara de menos de diez dólares, un chip con WiFi y una línea de código que le hace una pregunta a una inteligencia artificial. Esta es la historia de cómo pasamos del ojo humano a eso.</p>
+    </div>
+    <div class="ojo-caja">
+      <svg id="ojo" viewBox="0 0 400 260" role="img" aria-label="Un ojo que sigue el puntero y se transforma en el lente de una cámara">
+        <defs>
+          <radialGradient id="iris" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#6b3f06"/>
+            <stop offset="55%" stop-color="#c47f0e"/>
+            <stop offset="100%" stop-color="#5a3405"/>
+          </radialGradient>
+          <radialGradient id="lente" cx="42%" cy="38%" r="60%">
+            <stop offset="0%" stop-color="#3a5a7a"/>
+            <stop offset="45%" stop-color="#0d1b2a"/>
+            <stop offset="100%" stop-color="#02060a"/>
+          </radialGradient>
+          <clipPath id="parpado"><path id="formaOjo" d="M20 130 Q200 -10 380 130 Q200 270 20 130 Z"/></clipPath>
+        </defs>
+        <path d="M20 130 Q200 -10 380 130 Q200 270 20 130 Z" fill="#fbfaf6" stroke="var(--tinta)" stroke-width="3"/>
+        <g clip-path="url(#parpado)">
+          <g id="mirada">
+            <g id="capaIris">
+              <circle cx="200" cy="130" r="62" fill="url(#iris)"/>
+              <g id="fibras" stroke="#f0b24a" stroke-opacity=".35" stroke-width="1.4"></g>
+              <circle cx="200" cy="130" r="24" fill="#0b0d0c"/>
+              <circle cx="186" cy="116" r="8" fill="#fff" opacity=".85"/>
+            </g>
+            <g id="capaLente" opacity="0">
+              <circle cx="200" cy="130" r="64" fill="#141a1c" stroke="#8a9599" stroke-width="3"/>
+              <circle cx="200" cy="130" r="50" fill="url(#lente)"/>
+              <circle cx="200" cy="130" r="18" fill="none" stroke="#5f7d99" stroke-width="2" opacity=".6"/>
+              <circle cx="184" cy="113" r="9" fill="#fff" opacity=".35"/>
+              <circle cx="238" cy="92" r="5" fill="#d2463c"/>
+            </g>
+          </g>
+          <rect id="parpadoSup" x="0" y="-150" width="400" height="150" fill="var(--fondo)"/>
+        </g>
+      </svg>
+      <button class="chip" id="cambiarOjo" aria-pressed="false">Mirar como cámara</button>
+      <p class="pie">Mové el puntero: te sigue con la mirada.</p>
+    </div>
+  </header>
+</div>
+
+<main>
+  <section class="capitulo columna" id="ojo-humano">
+    <div class="cabeza">
+      <p class="etiqueta">Capítulo 1 · El ojo</p>
+      <h2>Ver no es lo mismo que entender</h2>
+    </div>
+    <p>La luz entra por la pupila, atraviesa el cristalino y llega a la retina, una capa de células al fondo del ojo. Ahí millones de sensores convierten la luz en señales eléctricas que viajan por el nervio óptico hasta el cerebro. <strong>El ojo capta; el cerebro interpreta.</strong> Reconocer una taza, una cara o una puerta abierta ocurre en el cerebro, no en el ojo.</p>
+    <div class="cifras">
+      <div class="cifra"><div class="n dato">120 M</div><div class="d">bastones: ven con poca luz, sin color</div></div>
+      <div class="cifra"><div class="n dato">6 M</div><div class="d">conos: ven los colores (rojo, verde y azul)</div></div>
+      <div class="cifra"><div class="n dato">≈ 2°</div><div class="d">de visión realmente nítida: la fóvea. El resto se ve borroso</div></div>
+    </div>
+    <p>Ese último dato sorprende: solo vemos con nitidez un punto del tamaño de una uña con el brazo estirado. El cerebro mueve los ojos sin parar y arma la imagen completa. Lo vas a probar más abajo.</p>
+  </section>
+
+  <section class="capitulo columna" id="chip">
+    <div class="cabeza">
+      <p class="etiqueta">Capítulo 2 · El chip</p>
+      <h2>Un microcontrolador del tamaño de una estampilla</h2>
+    </div>
+    <p>El <strong>ESP32</strong> es un <strong>microcontrolador</strong>: un chip que junta un procesador, memoria y periféricos (WiFi, Bluetooth, pines de entrada y salida) para <strong>controlar algo</strong> del mundo físico: prender una luz, leer un sensor, sacar una foto. No es una computadora. No tiene sistema operativo ni corre varios programas a la vez: ejecuta <strong>un solo programa</strong>, el que le cargues, desde que se enciende hasta que se apaga. Es el tipo de chip que hay adentro de un enchufe inteligente, un sensor de riego o un timbre con cámara.</p>
+    <div class="tabla-caja">
+      <table class="comparacion">
+        <thead><tr><th scope="col"></th><th scope="col">Una computadora</th><th scope="col">Un microcontrolador (ESP32)</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Programas</th><td>Muchos a la vez, con sistema operativo</td><td>Uno solo, sin sistema operativo</td></tr>
+          <tr><th scope="row">Memoria</th><td>Miles de millones de bytes (GB)</td><td class="dato">520 KB (+ 4 MB de PSRAM en la ESP32-CAM)</td></tr>
+          <tr><th scope="row">Contacto con el mundo</th><td>Teclado, pantalla, mouse</td><td>Pines que prenden, apagan y miden</td></tr>
+          <tr><th scope="row">Consumo</th><td>Decenas de vatios</td><td>Alrededor de un vatio</td></tr>
+          <tr><th scope="row">Precio</th><td>Cientos de dólares</td><td>Pocos dólares</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ol class="tiempo">
+      <li><span class="anio">2008</span>Nace Espressif Systems en Shanghái, una empresa de chips.</li>
+      <li><span class="anio">2014</span>Su chip ESP8266 se vuelve famoso entre aficionados: WiFi por unos pocos dólares. Cualquiera puede conectar un aparato a internet.</li>
+      <li><span class="anio">2016</span>Llega el ESP32: dos núcleos, WiFi y Bluetooth. Se convierte en uno de los chips más usados para proyectos de internet de las cosas (IoT).</li>
+      <li><span class="anio">Después</span>El fabricante AI-Thinker le pega una cámara: la <strong>ESP32-CAM</strong>, la placa de este curso.</li>
+    </ol>
+  </section>
+
+  <section class="capitulo ancho" id="placa-seccion">
+    <div class="columna cabeza">
+      <p class="etiqueta">Capítulo 3 · La cámara</p>
+      <h2>La ESP32-CAM, por dentro</h2>
+      <p>Una ESP32-CAM real, de frente. Tocá los puntos, o los nombres, para ver qué hace cada parte.</p>
+    </div>
+    <figure class="placa-caja">
+      <div class="foto-placa">
+        <img src="img/esp32-cam_nowforever_cc-by-sa-4.0.jpg" width="720" height="945" alt="Foto real de una ESP32-CAM vista de frente: la cámara OV2640 montada sobre la ranura microSD, el cable plano de la cámara, el LED flash abajo a la derecha y dos filas de pines a los costados">
+        <button class="punto" data-id="camara" style="left:52.6%;top:26%" aria-label="Cámara OV2640"></button>
+        <button class="punto" data-id="sd" style="left:31%;top:11%" aria-label="Ranura microSD"></button>
+        <button class="punto" data-id="cable" style="left:54%;top:47%" aria-label="Cable plano de la cámara"></button>
+        <button class="punto" data-id="flash" style="left:86.7%;top:72.2%" aria-label="LED flash"></button>
+        <button class="punto" data-id="pines" style="left:16%;top:41%" aria-label="Pines"></button>
+      </div>
+      <div>
+        <p class="pie" style="margin-bottom:6px">De este lado:</p>
+        <div class="componentes" id="listaFrente" role="group" aria-label="Componentes visibles en la foto"></div>
+        <p class="pie" style="margin-bottom:6px">Del otro lado de la placa (no se ven en la foto):</p>
+        <div class="componentes" id="listaAtras" role="group" aria-label="Componentes del otro lado"></div>
+        <div class="ficha" id="ficha" aria-live="polite"></div>
+      </div>
+      <figcaption class="credito">Foto: Nowforever, <a href="https://commons.wikimedia.org/wiki/File:ESP32-CAM.jpg">Wikimedia Commons</a>, licencia <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.es">CC BY-SA 4.0</a>. Imagen reducida de tamaño.</figcaption>
+    </figure>
+  </section>
+
+  <section class="capitulo ancho" id="tres-miradas">
+    <div class="columna cabeza">
+      <p class="etiqueta">Capítulo 4 · Tres maneras de mirar</p>
+      <h2>La misma escena, vista por un ojo, un sensor y un agente</h2>
+      <p>Pasá el puntero (o el dedo) sobre la imagen en cada modo.</p>
+    </div>
+    <div class="escenario">
+      <div class="pestanas" role="tablist" aria-label="Modo de mirada">
+        <button class="pestana" role="tab" id="t-ojo" aria-selected="true" data-modo="ojo">Como un ojo</button>
+        <button class="pestana" role="tab" id="t-sensor" aria-selected="false" data-modo="sensor">Como un sensor</button>
+        <button class="pestana" role="tab" id="t-agente" aria-selected="false" data-modo="agente">Como un agente</button>
+      </div>
+      <div class="lienzo-caja"><canvas id="escena" width="800" height="600" aria-label="Escena de una oficina: una persona con su laptop, una taza, una planta, una lámpara, una ventana y una puerta entreabierta"></canvas></div>
+      <div class="controles" id="controles"></div>
+      <p class="explica" id="explicaModo" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <section class="capitulo ancho" id="agente">
+    <div class="columna cabeza">
+      <p class="etiqueta">Capítulo 5 · La pregunta define al agente</p>
+      <h2>Una cámara, muchos trabajos</h2>
+      <p>Un <strong>agente</strong> es un programa que percibe algo del mundo, razona y responde o actúa. En la lección 05 la ESP32-CAM saca una foto y se la manda a Gemini, la IA de Google, junto con una pregunta. El hardware es el mismo; lo que cambia su trabajo es <strong>lo que le preguntás</strong>.</p>
+    </div>
+    <div class="agente">
+      <div class="lienzo-caja"><canvas id="escenaAgente" width="800" height="600" aria-label="La misma escena con los objetos relevantes para la pregunta marcados"></canvas></div>
+      <div class="preguntas">
+        <div class="preguntas" id="preguntas" role="group" aria-label="Preguntas para el agente"></div>
+        <div class="respuesta">
+          <div class="quien">RESPUESTA DE EJEMPLO · en la lección 05 la da Gemini de verdad</div>
+          <div class="texto" id="respuestaTexto" aria-live="polite"></div>
+          <div class="accion" id="respuestaAccion"></div>
+        </div>
+      </div>
+    </div>
+    <div class="columna" style="display:grid; gap:10px; margin-top:14px">
+      <h3>Lo que pasa en esos segundos</h3>
+      <p class="pie">El total se midió con una ESP32-CAM real y señal WiFi débil, el 25 de septiembre de 2026. El reparto entre los pasos es aproximado.</p>
+    </div>
+    <div class="tuberia" style="margin-top:10px">
+      <div class="paso"><div class="v">≈ 0,1 s</div><div class="t">Mirar</div><div class="d">El sensor saca una foto de 800 × 600: unos 20 KB en JPEG.</div></div>
+      <div class="paso"><div class="v">≈ 1 s</div><div class="t">Viajar</div><div class="d">La foto viaja cifrada por WiFi e internet hasta Google.</div></div>
+      <div class="paso"><div class="v">≈ 2–3 s</div><div class="t">Pensar</div><div class="d">El modelo relaciona los píxeles con palabras y escribe una respuesta.</div></div>
+      <div class="paso"><div class="v dato">3,5–4,5 s</div><div class="t">En total</div><div class="d">De la pregunta a la respuesta, medido 5 de 5 veces.</div></div>
+    </div>
+  </section>
+
+  <section class="columna cierre" id="pregunta">
+    <p class="etiqueta">La pregunta</p>
+    <p class="grande">¿Es un dispositivo de internet de las cosas, o es <em>la mirada de un agente</em>?</p>
+    <p>Un sensor de temperatura mide un número. Esta cámara, en cambio, le da a un modelo de IA la capacidad de <strong>ver y opinar</strong> sobre lo que ve: describe, cuenta, compara, avisa. Cuesta menos que un almuerzo y cabe en la palma de la mano. El chip no entiende nada; el que entiende está del otro lado del cable. Pero sin esos ojos, el agente no sabría que la puerta quedó abierta.</p>
+    <ol class="para-clase">
+      <li><span><strong>¿Quién decide qué se mira?</strong> La cámara ve todo lo que tiene enfrente, incluida la pantalla de alguien. ¿Dónde está el límite?</span></li>
+      <li><span><strong>¿Cuánto confiarías en lo que dice?</strong> El agente puede equivocarse con confianza. ¿Qué decisiones le dejarías tomar solo?</span></li>
+      <li><span><strong>¿Qué agente construirías vos?</strong> Con la misma placa y otra pregunta: ¿qué problema de tu casa, tu trabajo o tu comunidad resolvería?</span></li>
+    </ol>
+    <p><a class="chip" href="index.html" style="text-decoration:none;display:inline-block">Empezar las lecciones →</a></p>
+    <p class="pie">Este texto es la introducción del curso <a href="https://github.com/alejoherrera/aprendiendo-esp32">Aprendiendo ESP32</a>: cinco lecciones, desde prender una luz hasta la lección 05, "Ojos de un agente".</p>
+  </section>
+</main>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const reducido = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- Portada: el ojo que sigue al puntero ---------- */
+  const fibras = $("fibras");
+  for (let i = 0; i < 36; i++) {
+    const a = (i / 36) * Math.PI * 2;
+    const l = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    l.setAttribute("x1", 200 + Math.cos(a) * 28); l.setAttribute("y1", 130 + Math.sin(a) * 28);
+    l.setAttribute("x2", 200 + Math.cos(a) * 58); l.setAttribute("y2", 130 + Math.sin(a) * 58);
+    fibras.appendChild(l);
+  }
+  const svgOjo = $("ojo"), mirada = $("mirada");
+  let destino = { x: 0, y: 0 }, actual = { x: 0, y: 0 };
+  function apuntar(cx, cy) {
+    const r = svgOjo.getBoundingClientRect();
+    const dx = cx - (r.left + r.width / 2), dy = cy - (r.top + r.height / 2);
+    const dist = Math.hypot(dx, dy) || 1, alcance = Math.min(1, dist / 400);
+    destino = { x: (dx / dist) * 58 * alcance, y: (dy / dist) * 28 * alcance };
+  }
+  addEventListener("pointermove", (e) => apuntar(e.clientX, e.clientY), { passive: true });
+  function animarOjo() {
+    actual.x += (destino.x - actual.x) * 0.15; actual.y += (destino.y - actual.y) * 0.15;
+    mirada.setAttribute("transform", `translate(${actual.x.toFixed(1)} ${actual.y.toFixed(1)})`);
+    requestAnimationFrame(animarOjo);
+  }
+  animarOjo();
+  const parpado = $("parpadoSup");
+  function parpadear() {
+    if (reducido) return;
+    parpado.animate([{ transform: "translateY(0)" }, { transform: "translateY(150px)" }, { transform: "translateY(0)" }],
+      { duration: 220, easing: "ease-in-out" });
+  }
+  if (!reducido) setInterval(parpadear, 4200);
+  $("cambiarOjo").onclick = (e) => {
+    const lente = e.currentTarget.getAttribute("aria-pressed") !== "true";
+    e.currentTarget.setAttribute("aria-pressed", lente);
+    e.currentTarget.textContent = lente ? "Mirar como ojo" : "Mirar como cámara";
+    parpadear();
+    setTimeout(() => {
+      $("capaIris").setAttribute("opacity", lente ? 0 : 1);
+      $("capaLente").setAttribute("opacity", lente ? 1 : 0);
+    }, reducido ? 0 : 110);
+  };
+
+  /* ---------- Capitulo 3: la placa (foto real) ---------- */
+  const COMPONENTES = {
+    camara: { lado: "frente", nombre: "La cámara OV2640", tec: "2 megapíxeles · 1600 × 1200 píxeles · JPEG por hardware",
+      texto: "El ojo de la placa: convierte la luz en datos, como la retina. Comprime cada foto en JPEG sin ayuda del microcontrolador: una foto de 800 × 600 pesa unos 20 KB. El foco se ajusta girando el lente." },
+    cable: { lado: "frente", nombre: "El cable plano", tec: "une la cámara con la placa",
+      texto: "Por acá viajan los datos de la imagen hacia el microcontrolador. Si queda flojo, la cámara no responde: en las pruebas del curso eso dio el error 0x105 hasta que se acomodó." },
+    sd: { lado: "frente", nombre: "La ranura microSD", tec: "debajo de la cámara · comparte pines con el flash",
+      texto: "Para guardar fotos en una tarjeta. Comparte cables con el flash: si usás la tarjeta, el flash parpadea solo." },
+    flash: { lado: "frente", nombre: "El LED flash", tec: "GPIO 4 · brillo por PWM",
+      texto: "Una luz blanca muy potente. Con apenas el 2 % de potencia ya duplica la luz de la escena: lo medimos con la propia cámara en la lección 02." },
+    pines: { lado: "frente", nombre: "Los pines", tec: "5V · GND · U0R/U0T · IO0 · IO2 a IO16",
+      texto: "Por acá entra la energía (5V y GND) y viajan los mensajes del cable USB (U0R y U0T). IO0 decide si la placa arranca normal o lista para recibir un programa. El resto sirve para conectar sensores y actuadores." },
+    chip: { lado: "atras", nombre: "El microcontrolador ESP32", tec: "2 núcleos · 240 MHz · 520 KB de RAM · WiFi 2.4 GHz · Bluetooth",
+      texto: "Está del otro lado, bajo una tapa metálica. Ejecuta tu programa, maneja la cámara y habla por WiFi. En el curso lo programás en C++." },
+    psram: { lado: "atras", nombre: "La memoria PSRAM", tec: "4 MB",
+      texto: "Del otro lado, junto al microcontrolador. Memoria extra para guardar fotos grandes: sin ella, una foto de 1600 × 1200 no entra." },
+    antena: { lado: "atras", nombre: "La antena", tec: "2.4 GHz · dibujada en la placa",
+      texto: "Del otro lado, en un extremo: una pista de cobre en zigzag. Por ahí salen las fotos hacia la red. Es pequeña: lejos del router, la señal se debilita." },
+  };
+  function elegirComponente(id) {
+    document.querySelectorAll(".punto").forEach((b) => b.setAttribute("aria-pressed", b.dataset.id === id));
+    document.querySelectorAll("#listaFrente .chip, #listaAtras .chip").forEach((b) => b.setAttribute("aria-pressed", b.dataset.id === id));
+    const c = COMPONENTES[id];
+    $("ficha").innerHTML = `<h3>${c.nombre}</h3><div class="tec">${c.tec}</div><p>${c.texto}</p>`;
+  }
+  for (const [id, c] of Object.entries(COMPONENTES)) {
+    const b = document.createElement("button");
+    b.className = "chip" + (c.lado === "atras" ? " atras" : "");
+    b.dataset.id = id;
+    b.textContent = c.nombre.replace(/^(El|La|Los|Las) /, "");
+    b.onclick = () => elegirComponente(id);
+    $(c.lado === "atras" ? "listaAtras" : "listaFrente").appendChild(b);
+  }
+  document.querySelectorAll(".punto").forEach((b) => (b.onclick = () => elegirComponente(b.dataset.id)));
+  elegirComponente("camara");
+
+  /* ---------- La escena (dibujada, para que no haya fotos de personas reales) ---------- */
+  const W = 800, H = 600;
+  const OBJETOS = {
+    persona: { x: 250, y: 150, w: 190, h: 290, etiqueta: "persona", conf: 0.96 },
+    laptop: { x: 330, y: 330, w: 230, h: 125, etiqueta: "laptop", conf: 0.94 },
+    taza: { x: 590, y: 380, w: 55, h: 70, etiqueta: "taza", conf: 0.88 },
+    planta: { x: 660, y: 290, w: 100, h: 165, etiqueta: "planta", conf: 0.91 },
+    lampara: { x: 120, y: 250, w: 110, h: 205, etiqueta: "lámpara", conf: 0.82 },
+    ventana: { x: 520, y: 40, w: 230, h: 200, etiqueta: "ventana", conf: 0.97 },
+    puerta: { x: 20, y: 60, w: 115, h: 395, etiqueta: "puerta entreabierta", conf: 0.79 },
+  };
+  function dibujarEscena(c) {
+    const g = c.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, "#c9d6d8"); g.addColorStop(1, "#b3c3c4");
+    c.fillStyle = g; c.fillRect(0, 0, W, H);
+    // puerta entreabierta
+    c.fillStyle = "#2a2f33"; c.fillRect(20, 60, 115, 395);
+    c.fillStyle = "#8a6a4a"; c.beginPath(); c.moveTo(20, 60); c.lineTo(95, 80); c.lineTo(95, 440); c.lineTo(20, 455); c.fill();
+    c.fillStyle = "#d9b44a"; c.beginPath(); c.arc(85, 260, 5, 0, 7); c.fill();
+    // ventana
+    const cielo = c.createLinearGradient(0, 40, 0, 240);
+    cielo.addColorStop(0, "#6fa8dc"); cielo.addColorStop(1, "#cfe6f5");
+    c.fillStyle = "#e8eeee"; c.fillRect(512, 32, 246, 216);
+    c.fillStyle = cielo; c.fillRect(520, 40, 230, 200);
+    c.fillStyle = "#f2f6f7"; c.beginPath(); c.ellipse(600, 110, 38, 14, 0, 0, 7); c.ellipse(630, 100, 30, 16, 0, 0, 7); c.fill();
+    c.fillStyle = "#e8eeee"; c.fillRect(632, 40, 6, 200); c.fillRect(520, 138, 230, 6);
+    // lampara
+    c.strokeStyle = "#3b3f42"; c.lineWidth = 7; c.beginPath(); c.moveTo(175, 455); c.lineTo(175, 330); c.lineTo(205, 280); c.stroke();
+    c.fillStyle = "#e3a23c"; c.beginPath(); c.moveTo(160, 290); c.lineTo(225, 250); c.lineTo(235, 285); c.closePath(); c.fill();
+    const luz = c.createRadialGradient(215, 300, 5, 215, 300, 170);
+    luz.addColorStop(0, "rgba(255,226,150,.55)"); luz.addColorStop(1, "rgba(255,226,150,0)");
+    c.fillStyle = luz; c.fillRect(40, 130, 350, 330);
+    // escritorio
+    c.fillStyle = "#7a5534"; c.fillRect(0, 450, W, 30); c.fillStyle = "#5e3f25"; c.fillRect(0, 480, W, 120);
+    // persona
+    c.fillStyle = "#34495e"; c.beginPath(); c.moveTo(262, 440); c.quadraticCurveTo(262, 285, 345, 280); c.quadraticCurveTo(428, 285, 428, 440); c.fill();
+    c.fillStyle = "#c68e62"; c.beginPath(); c.arc(345, 222, 52, 0, 7); c.fill();
+    c.fillStyle = "#2b1d14"; c.beginPath(); c.arc(345, 205, 54, Math.PI * 1.02, Math.PI * 1.98); c.fill();
+    // laptop
+    c.fillStyle = "#2b3034"; c.beginPath(); c.moveTo(355, 335); c.lineTo(535, 335); c.lineTo(548, 440); c.lineTo(342, 440); c.fill();
+    c.fillStyle = "#79c2e6"; c.fillRect(370, 348, 160, 78);
+    c.fillStyle = "#1f2326"; c.fillRect(330, 440, 230, 12);
+    // taza
+    c.fillStyle = "#f4f4f2"; c.fillRect(595, 395, 42, 55); c.strokeStyle = "#f4f4f2"; c.lineWidth = 6;
+    c.beginPath(); c.arc(640, 420, 12, -1.2, 1.2); c.stroke();
+    c.strokeStyle = "rgba(255,255,255,.7)"; c.lineWidth = 3;
+    c.beginPath(); c.moveTo(610, 388); c.quadraticCurveTo(600, 372, 612, 358); c.stroke();
+    // planta
+    c.fillStyle = "#b5552f"; c.beginPath(); c.moveTo(675, 395); c.lineTo(745, 395); c.lineTo(735, 452); c.lineTo(685, 452); c.fill();
+    c.fillStyle = "#3e8a4f";
+    for (const [dx, dy, r] of [[-30, -60, 30], [25, -75, 34], [0, -105, 32], [-20, -30, 26], [30, -35, 24]]) {
+      c.beginPath(); c.ellipse(710 + dx, 395 + dy, r * 0.55, r, dx / 60, 0, 7); c.fill();
+    }
+  }
+  const base = document.createElement("canvas"); base.width = W; base.height = H;
+  dibujarEscena(base.getContext("2d"));
+  const borrosa = document.createElement("canvas"); borrosa.width = W; borrosa.height = H;
+  { const b = borrosa.getContext("2d"); b.filter = "blur(9px)"; b.drawImage(base, 0, 0); b.filter = "none"; }
+
+  function colorTinta() { return getComputedStyle(document.documentElement).getPropertyValue("--ambar-vivo").trim() || "#e39a1c"; }
+  function dibujarCaja(c, o, resaltar, apagada) {
+    c.save();
+    c.globalAlpha = apagada ? 0.35 : 1;
+    c.strokeStyle = resaltar ? colorTinta() : "#ffffff"; c.lineWidth = resaltar ? 4 : 2;
+    c.setLineDash(resaltar ? [] : [8, 6]);
+    c.strokeRect(o.x, o.y, o.w, o.h);
+    const txt = `${o.etiqueta} ${Math.round(o.conf * 100)} %`;
+    c.font = "500 16px 'IBM Plex Mono', monospace";
+    const tw = c.measureText(txt).width + 12;
+    c.fillStyle = resaltar ? colorTinta() : "rgba(15,20,20,.78)";
+    c.fillRect(o.x, Math.max(0, o.y - 24), tw, 24);
+    c.fillStyle = resaltar ? "#1a1204" : "#ffffff";
+    c.fillText(txt, o.x + 6, Math.max(17, o.y - 7));
+    c.restore();
+  }
+
+  /* ---------- Capitulo 4: tres maneras de mirar ---------- */
+  const lienzo = $("escena"), ctx = lienzo.getContext("2d");
+  const RESOLUCIONES = [
+    { nombre: "1600 × 1200 (UXGA)", ancho: 1600 }, { nombre: "800 × 600 (SVGA)", ancho: 800 },
+    { nombre: "320 × 240 (QVGA)", ancho: 320 }, { nombre: "96 × 72", ancho: 96 }, { nombre: "32 × 24", ancho: 32 },
+  ];
+  const estado = { modo: "ojo", px: W * 0.43, py: H * 0.38, res: 3 };
+  const pequena = document.createElement("canvas");
+
+  function explicacion() {
+    if (estado.modo === "ojo") return "<strong>Como un ojo:</strong> nítido solo donde mirás (la fóvea, unos 2°). El resto es borroso y tu cerebro lo completa con lo que ya sabe.";
+    if (estado.modo === "sensor") return "<strong>Como un sensor:</strong> la cámara no ve una taza ni una persona. Ve una grilla de puntos, cada uno con tres números: cuánto rojo, verde y azul. Bajá la resolución para ver los píxeles.";
+    return "<strong>Como un agente:</strong> un modelo de IA convierte esos números en palabras: qué hay, dónde y con cuánta seguridad. Los porcentajes son la confianza del modelo, no una certeza. <em>Recuadros y porcentajes de ejemplo.</em>";
+  }
+  function controles() {
+    const caja = $("controles");
+    if (estado.modo === "sensor") {
+      caja.innerHTML = `<label for="res">Resolución <input id="res" type="range" min="0" max="${RESOLUCIONES.length - 1}" step="1" value="${estado.res}"> <span class="dato" id="resNombre"></span></label>
+        <div class="lectura" id="lectura" aria-live="polite"></div>`;
+      $("res").oninput = (e) => { estado.res = +e.target.value; dibujar(); };
+    } else if (estado.modo === "agente") {
+      caja.innerHTML = `<div class="lectura" id="lectura">Pasá el puntero sobre un recuadro.</div>`;
+    } else {
+      caja.innerHTML = `<div class="lectura" id="lectura">Mové el puntero: donde apuntás, se ve nítido.</div>`;
+    }
+    $("explicaModo").innerHTML = explicacion();
+  }
+  function dibujar() {
+    const c = ctx;
+    if (estado.modo === "ojo") {
+      c.drawImage(borrosa, 0, 0);
+      c.save(); c.beginPath(); c.arc(estado.px, estado.py, 70, 0, 7); c.clip(); c.drawImage(base, 0, 0); c.restore();
+      const v = c.createRadialGradient(estado.px, estado.py, 60, estado.px, estado.py, 520);
+      v.addColorStop(0, "rgba(0,0,0,0)"); v.addColorStop(1, "rgba(0,0,0,.35)");
+      c.fillStyle = v; c.fillRect(0, 0, W, H);
+    } else if (estado.modo === "sensor") {
+      const r = RESOLUCIONES[estado.res];
+      const pw = Math.min(W, Math.round(r.ancho / 2)), ph = Math.round(pw * 3 / 4); // el lienzo es 800 px = mitad de UXGA
+      pequena.width = pw; pequena.height = ph;
+      const p = pequena.getContext("2d"); p.drawImage(base, 0, 0, pw, ph);
+      c.imageSmoothingEnabled = false; c.drawImage(pequena, 0, 0, W, H); c.imageSmoothingEnabled = true;
+      const celda = W / pw;
+      const ix = Math.min(pw - 1, Math.floor(estado.px / celda)), iy = Math.min(ph - 1, Math.floor(estado.py / celda));
+      const [R, G, B] = p.getImageData(ix, iy, 1, 1).data;
+      if (celda >= 6) { c.strokeStyle = "rgba(255,255,255,.18)"; c.lineWidth = 1;
+        for (let x = 0; x <= W; x += celda) { c.beginPath(); c.moveTo(x, 0); c.lineTo(x, H); c.stroke(); }
+        for (let y = 0; y <= H; y += celda) { c.beginPath(); c.moveTo(0, y); c.lineTo(W, y); c.stroke(); } }
+      c.strokeStyle = colorTinta(); c.lineWidth = 3; c.strokeRect(ix * celda, iy * celda, Math.max(celda, 4), Math.max(celda, 4));
+      const hex = (n) => n.toString(16).toUpperCase().padStart(2, "0");
+      const total = (r.ancho * r.ancho * 3 / 4);
+      if ($("resNombre")) $("resNombre").textContent = `${r.nombre} · ${total.toLocaleString("es")} píxeles`;
+      if ($("lectura")) $("lectura").innerHTML =
+        `píxel (${ix}, ${iy}) → <span class="muestra" style="background:rgb(${R},${G},${B})"></span>` +
+        `R <b style="color:var(--rojo)">${R}</b> · G <b style="color:var(--verde)">${G}</b> · B <b style="color:var(--azul)">${B}</b> · hex ${hex(R)} ${hex(G)} ${hex(B)}`;
+    } else {
+      c.drawImage(base, 0, 0);
+      c.fillStyle = "rgba(10,20,20,.18)"; c.fillRect(0, 0, W, H);
+      let sobre = null;
+      for (const [id, o] of Object.entries(OBJETOS)) {
+        const dentro = estado.px >= o.x && estado.px <= o.x + o.w && estado.py >= o.y && estado.py <= o.y + o.h;
+        if (dentro && (!sobre || o.w * o.h < OBJETOS[sobre].w * OBJETOS[sobre].h)) sobre = id;
+      }
+      for (const [id, o] of Object.entries(OBJETOS)) dibujarCaja(c, o, id === sobre, false);
+      if ($("lectura")) $("lectura").textContent = sobre
+        ? `detectado: "${OBJETOS[sobre].etiqueta}" · confianza ${Math.round(OBJETOS[sobre].conf * 100)} % · recuadro x=${OBJETOS[sobre].x} y=${OBJETOS[sobre].y} ${OBJETOS[sobre].w}×${OBJETOS[sobre].h}`
+        : "7 objetos detectados. Pasá el puntero sobre un recuadro.";
+    }
+  }
+  function posicion(e) {
+    const r = lienzo.getBoundingClientRect();
+    estado.px = ((e.clientX - r.left) / r.width) * W; estado.py = ((e.clientY - r.top) / r.height) * H;
+    dibujar();
+  }
+  lienzo.addEventListener("pointermove", posicion);
+  lienzo.addEventListener("pointerdown", posicion);
+  document.querySelectorAll(".pestana").forEach((b) => b.onclick = () => {
+    estado.modo = b.dataset.modo;
+    document.querySelectorAll(".pestana").forEach((x) => x.setAttribute("aria-selected", x === b));
+    controles(); dibujar();
+  });
+  controles(); dibujar();
+
+  /* ---------- Capitulo 5: la pregunta define al agente ---------- */
+  const PREGUNTAS = [
+    { p: "¿Qué ves?", mira: ["persona", "laptop", "taza", "planta", "lampara", "ventana", "puerta"],
+      r: "Una persona trabaja frente a una laptop en un escritorio. Hay una taza, una planta y una lámpara encendida. A la derecha, una ventana con el cielo despejado; a la izquierda, una puerta entreabierta.",
+      a: "Solo describe. Nada más." },
+    { p: "¿Hay alguien trabajando sin casco?", mira: ["persona"],
+      r: "Sí. Hay una persona y no lleva casco.",
+      a: "Si esto fuera una obra en construcción: <b>avisar al supervisor</b> con la foto." },
+    { p: "¿Cuántas personas hay?", mira: ["persona"],
+      r: "Una.",
+      a: "<b>Anotar</b> en una planilla: 1 persona, con la hora. Así se mide cuánto se usa un espacio." },
+    { p: "¿La puerta está abierta?", mira: ["puerta"],
+      r: "Está entreabierta.",
+      a: "<b>Avisar</b> si sigue abierta en diez minutos." },
+    { p: "¿Qué hay en la pantalla de la laptop?", mira: ["laptop"],
+      r: "La pantalla muestra una imagen celeste. Desde este ángulo no se distingue el contenido.",
+      a: "Nadie le prohibió mirar la pantalla. <b>La cámara ve todo lo que tiene enfrente</b>: el límite lo ponemos las personas." },
+  ];
+  const lienzoA = $("escenaAgente"), ctxA = lienzoA.getContext("2d");
+  let escritura = null;
+  function elegirPregunta(i) {
+    const q = PREGUNTAS[i];
+    document.querySelectorAll(".pregunta").forEach((b, j) => b.setAttribute("aria-pressed", i === j));
+    ctxA.drawImage(base, 0, 0);
+    ctxA.fillStyle = "rgba(10,20,20,.30)"; ctxA.fillRect(0, 0, W, H);
+    for (const [id, o] of Object.entries(OBJETOS)) if (!q.mira.includes(id)) dibujarCaja(ctxA, o, false, true);
+    for (const id of q.mira) dibujarCaja(ctxA, OBJETOS[id], true, false);
+    $("respuestaAccion").innerHTML = `<strong>Y después:</strong> ${q.a}`;
+    clearInterval(escritura);
+    const t = $("respuestaTexto");
+    if (reducido) { t.textContent = q.r; return; }
+    let n = 0; t.textContent = "";
+    escritura = setInterval(() => { n += 2; t.textContent = q.r.slice(0, n); if (n >= q.r.length) clearInterval(escritura); }, 18);
+  }
+  PREGUNTAS.forEach((q, i) => {
+    const b = document.createElement("button");
+    b.className = "pregunta"; b.textContent = q.p; b.onclick = () => elegirPregunta(i);
+    $("preguntas").appendChild(b);
+  });
+  elegirPregunta(0);
+  // Las etiquetas del lienzo usan IBM Plex Mono: se redibujan cuando termina de cargar.
+  if (document.fonts) document.fonts.ready.then(() => { dibujar(); elegirPregunta(0); });
+
+  // Si cambia el tema, las etiquetas del lienzo usan el nuevo color de acento.
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { dibujar(); elegirPregunta([...document.querySelectorAll(".pregunta")].findIndex((b) => b.getAttribute("aria-pressed") === "true")); });
+})();
+</script>
+
+</body>
+</html>

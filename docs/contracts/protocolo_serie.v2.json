@@ -1,0 +1,29 @@
+{
+  "nombre": "protocolo_serie",
+  "version": 2,
+  "fecha": "2026-09-25",
+  "reemplaza": "v1 (nunca implementada). v2 agrega PAUSA/SIGUE/PASO y el evento [PAUSA n] para detener la placa y ver el codigo paso a paso (2026-09-25). WIFI e INFO extendido quedan para la fase 3.",
+  "descripcion": "Protocolo de texto entre el panel (navegador, Web Serial) y el firmware de las lecciones (lib/panel). Una linea por mensaje terminada en \\n, 115200 baudios. Legible desde cualquier monitor serie. Las lineas de la placa que no empiezan con un prefijo de este contrato son salida normal de la leccion. Las lineas del panel que no son comandos se entregan a la leccion con panel::leerLinea().",
+  "panel_a_placa": {
+    "LIST":  {"formato": "LIST", "respuesta": "una linea PARAM por parametro y luego END LIST"},
+    "SET":   {"formato": "SET <nombre> <entero>", "ejemplo": "SET ENCENDIDO_MS 500",
+              "respuesta": "OK SET <nombre> <valor_aplicado> | ERR param_desconocido <nombre> | ERR valor_invalido <texto>",
+              "reglas": ["fuera de rango se RECORTA al rango", "se guarda en NVS y se aplica de inmediato (salvo que la descripcion diga 'al reiniciar')"]},
+    "RESET": {"formato": "RESET", "respuesta": "OK RESET", "efecto": "borra los valores guardados; vuelven los de fabrica"},
+    "PAUSA": {"formato": "PAUSA", "respuesta": "OK PAUSA", "efecto": "la placa se detiene en el proximo panel::parte() y emite [PAUSA n]"},
+    "SIGUE": {"formato": "SIGUE", "respuesta": "OK SIGUE", "efecto": "sale de la pausa y corre normal"},
+    "PASO":  {"formato": "PASO", "respuesta": "OK PASO", "efecto": "estando en pausa: ejecuta la parte actual y se detiene en la siguiente. Sin pausa: ERR no_pausado"},
+    "INFO":  {"formato": "INFO", "respuesta": "INFO leccion=<id> pausado=<0|1> parte=<n>"}
+  },
+  "placa_a_panel": {
+    "HOLA":     {"formato": "HOLA leccion=<id>", "cuando": "al llamar panel::iniciar() en setup()"},
+    "PARAM":    {"formato": "PARAM <nombre> <valor> <min> <max> <descripcion hasta fin de linea>"},
+    "END LIST": {"formato": "END LIST"},
+    "OK":       {"formato": "OK <comando> [detalle]"},
+    "ERR":      {"formato": "ERR <motivo> [detalle]"},
+    "INFO":     {"formato": "INFO leccion=<id> pausado=<0|1> parte=<n>"},
+    "PARTE":    {"formato": "[PARTE <n>]", "cuando": "al CAMBIAR de parte (no se repite dentro de un loop que se queda en la misma)"},
+    "PAUSA":    {"formato": "[PAUSA <n>]", "cuando": "cada vez que la placa queda detenida ANTES de ejecutar la parte n"}
+  },
+  "correspondencia_con_el_codigo": "La parte n es el bloque que empieza en la linea '// --- Parte n:' del main.cpp de la leccion y termina en el siguiente marcador. Su explicacion es la seccion '### Parte n' del README.md de la leccion."
+}

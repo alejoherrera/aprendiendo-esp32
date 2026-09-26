@@ -1,0 +1,22 @@
+{
+  "01_blink": {
+    "bytes": 364416,
+    "fuente_sha256": "57a68631e77d5e724907682e2359b8af3bef67a31419e9e4113d6efaa4c3300a"
+  },
+  "02_flash_pwm": {
+    "bytes": 373360,
+    "fuente_sha256": "1c427c3e31bc8e2e84251bc429562677c27292eb69ad3e07d586ff68acdf9993"
+  },
+  "03_primera_foto": {
+    "bytes": 433296,
+    "fuente_sha256": "76304c05aded31fdb8f1a58d5ef9e11bb36f0736afb23a26b6c8383a06490c97"
+  },
+  "04_servidor_web": {
+    "bytes": 947952,
+    "fuente_sha256": "912fdf36ac798ae017e6c44f9ed8372331a83661dc5d523ccc27435e33048996"
+  },
+  "05_ojos_de_un_agente": {
+    "bytes": 1098976,
+    "fuente_sha256": "b1ddd9817b7bad3ad498fd04682b1dd927b16140a44afdbdc07e93a1d693042b"
+  }
+}

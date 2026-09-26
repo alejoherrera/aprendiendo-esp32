@@ -1,0 +1,51 @@
+{
+  "nombre": "protocolo_serie",
+  "version": 1,
+  "fecha": "2026-09-25",
+  "descripcion": "Protocolo de texto entre el panel (navegador, Web Serial) y el firmware de las lecciones (lib/panel). Una linea por mensaje, terminada en \\n, a 115200 baudios. Legible desde cualquier monitor serie. Las lineas que no empiezan con un prefijo de este contrato son salida normal de la leccion y el panel las muestra en el monitor tal cual.",
+  "panel_a_placa": {
+    "LIST": {
+      "formato": "LIST",
+      "efecto": "La placa responde con una linea PARAM por parametro declarado y termina con END LIST."
+    },
+    "SET": {
+      "formato": "SET <nombre> <valor>",
+      "ejemplo": "SET PAUSA_MS 250",
+      "efecto": "Valida el rango, guarda en NVS y aplica. Responde OK SET <nombre> <valor_aplicado> o ERR <motivo>.",
+      "reglas": ["valor fuera de rango se RECORTA al rango y se informa el valor aplicado", "nombre desconocido -> ERR param_desconocido <nombre>"]
+    },
+    "RESET": {
+      "formato": "RESET",
+      "efecto": "Borra todos los parametros guardados (vuelven a su valor por defecto). Responde OK RESET."
+    },
+    "WIFI": {
+      "formato": "WIFI <ssid>\\t<clave>",
+      "nota": "Separador TAB porque un SSID puede contener espacios.",
+      "efecto": "Guarda en NVS. Responde OK WIFI <ssid>. La clave NUNCA se reimprime."
+    },
+    "INFO": {
+      "formato": "INFO",
+      "efecto": "Responde INFO leccion=<id> version=<git_sha> ip=<ip|-> rssi=<dBm|->"
+    }
+  },
+  "placa_a_panel": {
+    "PARAM": {
+      "formato": "PARAM <nombre> <valor> <min> <max> <descripcion hasta fin de linea>",
+      "ejemplo": "PARAM PAUSA_MS 1000 50 5000 Tiempo entre parpadeos (ms)",
+      "tipos": "Solo enteros en v1."
+    },
+    "END LIST": {"formato": "END LIST"},
+    "OK": {"formato": "OK <comando> [detalle]"},
+    "ERR": {"formato": "ERR <motivo> [detalle]"},
+    "INFO": {"formato": "INFO leccion=<id> version=<git_sha> ip=<ip|-> rssi=<dBm|->"},
+    "PARTE": {
+      "formato": "[PARTE <n>]",
+      "efecto": "La placa entro a la parte n del codigo (bloque // --- Parte n del main.cpp). El panel la resalta.",
+      "regla": "Solo se emite al CAMBIAR de parte, para no inundar el serie dentro de loop()."
+    },
+    "HOLA": {
+      "formato": "HOLA leccion=<id>",
+      "efecto": "Primera linea de protocolo tras arrancar. Permite al panel saber que leccion esta cargada."
+    }
+  }
+}
