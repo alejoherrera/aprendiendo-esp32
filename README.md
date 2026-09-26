@@ -105,6 +105,7 @@ Después: VS Code → **File → Open Folder…** → elegí la carpeta de una l
 
 ## Para docentes y curiosos
 
+- **[Guía docente](docs/guia_docente.md): qué remarcar en cada clase**, con comparaciones para explicar cada concepto y confusiones típicas.
 - `lecciones/`: una carpeta por lección (código + explicación).
 - `panel/`: el panel web que abre `iniciar.bat`, incluida la bienvenida (`panel/bienvenida.html`).
 - `firmware/`: las lecciones ya compiladas, las que carga el panel.
